@@ -38,7 +38,6 @@ contains
         end do
       100 continue
         allocate(output(n,m))
-        print *, n
         rewind (17)  ! ファイルの最初に戻る
         read (17, '()')
         do i = 1, n

@@ -11,17 +11,22 @@ program main
     real(8) resB(3, 6)
     real(8) resD(3, 3)
     real(8) l(3)
-    real(8), allocatable :: K(:,:,:)
-    integer n 
+    real(8), allocatable :: K(:,:)
+    integer n, m 
+    
     points = readCsv('point.csv', 3)
     elements = makeElements(points)
-    n = size(elements, 1)
-    allocate(K(n,6,6))
+    n = size(points, 1) * 2
+    m = size(elements, 1)
+    allocate(K(n, n))
     do i = 1, n
-        K(i,:,:) = makeK(elements(i,:,:))
+        do j = 1, n
+            K(i,j) = 0.0d0
+        enddo
     enddo
-    !call printArray2(points)
-    !call printArray3(elements)
-    call printArray3(K)
+    do i = 1, m
+        K = K + makeK(elements(i,:,:), n)
+    enddo
+    call printArray2(K)
 end program main
 

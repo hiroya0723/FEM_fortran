@@ -36,13 +36,14 @@ contains
     function makeA(l) result(A)
         real(8) l(3)
         real(8) A
-        real(8) :: s = 0.0d0
+        real(8) s
         integer i
+        
+        s = 0.0d0
         do i = 1, 3
             s = s + l(i)
         enddo
         s = s/2.0d0
-        print *, s
         A = s
         do i = 1, 3
             A = A * (s-l(i))
@@ -95,24 +96,43 @@ contains
         D = E*D/(1-nu**2)
     end function makeD
     
-    function makeK(point) result(K)
+    function makeK(point, num) result(K)
         real(8) point(3, 3)
         real(8) A 
         real(8) B(3, 6), B_t(6, 3)
         real(8) D(3, 3)
-        real(8) K(6, 6)
+        real(8) K_element(6, 6)
+        real(8), allocatable :: K(:,:)
         real(8) l(3)
-        integer i
+        integer i, j
+        integer num
+        integer index(6)
         
+        allocate(K(num, num))
+        
+        do i = 1, num
+            do j = 1, num
+                K(i,j) = 0.0d0
+            enddo
+        enddo
         l = getL(point)
         A = makeA(l)
         B = makeB(point)
         B_t = transpose(B)
         D = makeD()
         
+        K_element = matmul(matmul(B_t, D), B)
+        K_element = A * h * K_element
         
-        !K = matmul(B_t, D)
-        K = matmul(matmul(B_t, D), B)
-        K = A * h * K
+        do i = 1, 3
+            index(2*(i-1)+1) = 2*point(i,1)-1
+            index(2*i)       = 2*point(i,1)
+        enddo
+        
+        do i = 1, 6
+            do j = 1, 6
+                K(index(i), index(j)) = K_element(i,j)
+            enddo
+        enddo
     end function makeK
 end module ElementModule

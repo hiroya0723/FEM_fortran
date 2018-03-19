@@ -64,15 +64,15 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/fem_fortran.exe: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.f} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/fem_fortran ${OBJECTFILES} ${LDLIBSOPTIONS}
 
-${OBJECTDIR}/ElementModule.o: ElementModule.f90
+${OBJECTDIR}/ElementModule.o: ElementModule.f90 
 	${MKDIR} -p ${OBJECTDIR}
 	$(COMPILE.f) -g -o ${OBJECTDIR}/ElementModule.o ElementModule.f90
 
-${OBJECTDIR}/MethodModule.o: MethodModule.f90
+${OBJECTDIR}/MethodModule.o: MethodModule.f90 
 	${MKDIR} -p ${OBJECTDIR}
 	$(COMPILE.f) -g -o ${OBJECTDIR}/MethodModule.o MethodModule.f90
 
-${OBJECTDIR}/main.o: main.f90
+${OBJECTDIR}/main.o: main.f90 
 	${MKDIR} -p ${OBJECTDIR}
 	$(COMPILE.f) -g -o ${OBJECTDIR}/main.o main.f90
 
@@ -82,6 +82,7 @@ ${OBJECTDIR}/main.o: main.f90
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
+	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/fem_fortran.exe
 	${RM} *.mod
 
 # Subprojects
