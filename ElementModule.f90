@@ -135,4 +135,78 @@ contains
             enddo
         enddo
     end function makeK
+    
+    function initD(condition) result(d)
+        integer condition(:, :)
+        real(8), allocatable :: d(:)
+        integer i, j, n
+        
+        n = size(condition, 1)
+        allocate(d(n*2))
+        
+        do i = 1, n
+            d(2*i-1) = condition(i,2)
+            d(2*i)   = condition(i,3)
+        enddo
+    end function initD
+    
+    function initF(f_all, index) result(f)
+        real(8) f_all(:, :)
+        integer index(:)
+        real(8), allocatable :: f_tmp(:)
+        real(8), allocatable :: f(:)
+        integer i, j, n
+        
+        n = size(f_all, 1)
+        allocate(f_tmp(n*2))
+        allocate(f(size(index)))
+        
+        do i = 1, n
+            f_tmp(2*i-1) = f_all(i,2)
+            f_tmp(2*i)   = f_all(i,3)
+        enddo
+
+        j = 1
+        do i = 1, size(index)
+            f(j) = f_tmp(index(i))
+            j = j + 1
+        enddo
+    end function initF
+    
+    subroutine calcD(K_all, d, f_all)
+        real(8) K_all(:,:)
+        real(8) d(:)
+        integer, allocatable :: index(:)
+        real(8), allocatable :: K(:,:)
+        real(8), allocatable :: f_all(:,:)
+        real(8), allocatable :: f(:)
+        integer i, j, n
+        
+        n = 0
+        do i = 1, size(d)
+            if(d(i) == 1) n = n + 1
+        enddo
+        allocate(index(n))
+        allocate(K(n,n))
+
+        j = 1
+        do i = 1, size(d)
+            if(d(i) == 1) then 
+                index(j) = i
+                j = j + 1
+            endif
+        enddo
+
+        f = initF(f_all, index)
+        
+        do i = 1, n
+            do j = 1, n
+                K(i,j) = K_all(index(i),index(j))
+            enddo
+        enddo
+
+        call solve(K,f,d)
+        !call printArray2(K)
+       ! print *, f
+    end subroutine calcD
 end module ElementModule

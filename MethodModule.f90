@@ -45,4 +45,51 @@ contains
         end do
         close (17)
     end function readCsv
+    
+    subroutine solve(a,b,x)
+        real(8) a(:,:)
+	real(8) b(:), x(:)
+	real(8) temp, alpha, reserve
+	integer i, j, k, L, dim, maxline
+
+        x = 0.0d0
+        dim = size(a,1)
+	do k = 1, dim - 1
+            maxline = k
+            do i = k + 1, dim
+                if (abs(a(i,k)) .gt. abs(a(maxline,k))) then
+                        maxline = i
+                end if
+
+                do L = 1, dim
+                        reserve = a(k,L)
+                        a(k,L) = a(maxline,L)
+                        a(maxline,L) = reserve
+                end do
+
+                reserve = b(k)
+                b(k) = b(maxline)
+                b(maxline) = reserve
+            end do
+
+            do i = k + 1, dim
+                alpha = a(i,k) / a(k,k)
+                do j = k , dim
+                    a(i,j) = a(i,j) - alpha * a(k,j)
+                end do
+                b(i) = b(i) - alpha * b(k)
+            end do
+	end do 
+
+	x(dim) = b(dim) / a(dim,dim)
+
+	do k = dim-1, 1, -1
+            temp = 0.0
+            do j = k + 1, dim
+                temp = temp + a(k,j) * x(j)
+            end do
+            x(k) = (b(k) - temp) / a(k,k)
+	end do
+        print *, x
+    end subroutine solve
 end module MethodModule
